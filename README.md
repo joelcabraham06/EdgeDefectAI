@@ -27,13 +27,13 @@ Instead of running heavy Autoencoders on every frame or relying solely on YOLO, 
 
 ```mermaid
 graph TD
-    Frame["🏭 Inspection Frame (Conveyor Belt)"] --> YOLO["⚡ Stream 1: YOLOv8-Lite Object Detector"]
-    YOLO --> Gate{"🔀 Dynamic Uncertainty Gating Controller"}
-    Gate -->|High Conf Known Defect (C >= 0.85)| Bypass["⏩ Bypass Stream 2 (Fast Path - ~12ms)"]
-    Gate -->|High Conf Clean Surface (C <= 0.25)| Bypass
-    Gate -->|Uncertainty Region (0.25 < C < 0.85)| AE["🔬 Stream 2: Latent Reconstruction Autoencoder"]
-    AE --> Residual["📉 Reconstruction Error Map (Zero-Shot)"]
-    Bypass --> Output["🔴/🟢 Conveyor Ejection & GPIO Hardware Trigger"]
+    Frame["Inspection Frame"] --> YOLO["Stream 1: YOLOv8-Lite Object Detector"]
+    YOLO --> Gate{"Dynamic Uncertainty Gating Controller"}
+    Gate -->|"High Confidence Known Defect (C >= 0.85)"| Bypass["Bypass Stream 2 (Fast Path ~12ms)"]
+    Gate -->|"High Confidence Clean Surface (C <= 0.25)"| Bypass
+    Gate -->|"Uncertainty Region (0.25 < C < 0.85)"| AE["Stream 2: Latent Reconstruction Autoencoder"]
+    AE --> Residual["Reconstruction Error Map (Zero-Shot)"]
+    Bypass --> Output["Conveyor Ejection & GPIO Hardware Trigger"]
     Residual --> Output
 ```
 
@@ -71,34 +71,6 @@ To execute the live conveyor belt inspection simulation and telemetry benchmark:
 
 ```bash
 python simulation/run_simulation.py
-```
-
-### Simulated Inspection Output:
-```
-=======================================================================
-[+] Real-Time Edge AI Industrial Defect Detection Engine (HD-DSEA)
-    NVIDIA Jetson / Edge Device Live Conveyor Belt Inspection Simulator
-=======================================================================
-
-[*] Processing 20 Simulated Manufacturing Conveyor Belt Frames...
-
-FRAME   CATEGORY        STATUS            DECISION                      FPS     LATENCY     GPIO ALERT
----------------------------------------------------------------------------------------------------------
-#1      metal_surface   CLEAN             TRIGGER_LATENT_RECONSTRUCTION 37.6    26.58       [OK] CLEAN
-#2      steel_sheet     DEFECT_DETECTED   BYPASS_AE_FAST_PATH           78.4    12.75       [ALERT] TRIGGERED
-#3      pcb_circuit     DEFECT_DETECTED   TRIGGER_LATENT_RECONSTRUCTION 32.6    30.67       [ALERT] TRIGGERED
-...
-
-=======================================================================
-[STATS] REAL-TIME EDGE TELEMETRY & NOVELTY BENCHMARK SUMMARY
-=======================================================================
-  • Total Industrial Frames Inspected: 20
-  • Average Pipeline Throughput:       48.2 FPS
-  • Average End-to-End Latency:        20.7 ms
-  • Autoencoder Bypass Ratio (HD-DSEA):65.0% of frames
-  • Estimated Edge Power Saved:        5.85 Joules
-  • Hardware Conveyor Ejection Alerts: 9 triggered
-=======================================================================
 ```
 
 ---
